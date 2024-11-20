@@ -9,7 +9,6 @@ const validateInteger = (value) => Number.isInteger(value);
 const validateFloat = (value) => typeof value === 'number' && !isNaN(value);
 const validateString = (value) => typeof value === 'string' && value.trim().length > 0;
 
-
 // Function to generate transxId
 const generateTransxId = () => {
     const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '').slice(0, 14); // Format: YYYYMMDDHHMMSS
@@ -92,18 +91,34 @@ router.post('/', authenticateToken, async (req, res) => {
             transxId
         });
 
+        // Update the balance by adding the fee amount to the first available balance
+        const balance = await db.Balance.findOne(); // Fetch the first available balance record
+
+        if (balance) {
+            // Update balance
+            balance.balance += amount;
+
+            await balance.save(); // Save the updated balance
+        } else {
+            // If no balance exists, create a new balance entry
+            await db.Balance.create({
+                userId,
+                balance: amount, // Set the balance to the fee amount if no previous balance exists
+            });
+        }
+
         return res.status(201).json({
             success: true,
-            message: 'Fees data created successfully.',
+            message: 'Fees data created and balance updated successfully.',
             data: fees,
             statusCode: 201
         });
 
     } catch (error) {
-        console.error('Error creating fees:', error);
+        console.error('Error creating fees and updating balance:', error);
         return res.status(500).json({
             success: false,
-            message: 'Error creating fees.',
+            message: 'Error creating fees and updating balance.',
             statusCode: 500
         });
     }

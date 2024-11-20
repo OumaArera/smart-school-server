@@ -5,12 +5,14 @@ const User = require('./user')(sequelize, Sequelize);
 const Student = require('./student')(sequelize, Sequelize);
 const Fees = require('./fees')(sequelize, Sequelize);
 const Budget = require('./budget')(sequelize, Sequelize);
+const Balance = require('./balance')(sequelize, Sequelize);
 
 const db = {
   User,
   Student,
   Fees,
   Budget,
+  Balance,
   sequelize, 
   Sequelize,
 };
