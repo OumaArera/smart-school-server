@@ -25,6 +25,7 @@ app.use('/users/budget', require('./budget/createBudget'));
 app.use('/users/budget', require('./budget/pendingBudget'));
 app.use('/users/budget', require('./budget/updateBudget'));
 app.use('/users/budgets', require('./budget/myBudgets'));
+app.use('/users/balance', require('./budget/getBalance'));
 
 app.get('/', (req, res) => {
   res.send('Hello, World!');

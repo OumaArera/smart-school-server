@@ -40,7 +40,36 @@ router.put('/:id', authenticateToken, async (req, res) => {
             });
         }
 
-        // Update the budget
+        // If status is being updated to "approved", check the balance
+        if (status === 'approved') {
+            const items = JSON.parse(budget.items); // Parse the items field (assuming it's stored as a JSON string)
+            const totalAmount = items.reduce((sum, item) => sum + item.total, 0); // Sum the total values of the items
+
+            // Retrieve the user's balance (first available balance, or the one associated with the user)
+            const balance = await db.Balance.findOne();
+
+            if (balance) {
+                if (balance.balance < totalAmount) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Insufficient balance to approve the budget.',
+                        statusCode: 400
+                    });
+                } else {
+                    // Reduce the balance by the total amount
+                    balance.balance -= totalAmount;
+                    await balance.save();
+                }
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    message: 'No balance record found for the user.',
+                    statusCode: 400
+                });
+            }
+        }
+
+        // Update the budget status and reason
         budget.status = status;
         budget.reason = reason || null; // Allow null for the reason if it's not provided
         await budget.save();
