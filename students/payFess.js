@@ -18,10 +18,14 @@ const generateTransxId = () => {
 };
 
 // POST endpoint for creating fees
+// POST endpoint for creating fees
 router.post('/', authenticateToken, async (req, res) => {
     const userId = req.user.id; // Extracting userId from the decoded token
 
     const { studentId, amount, paymentType, transactionId, purpose } = req.body;
+
+    // Convert amount to float
+    const amountAsFloat = parseFloat(amount);
 
     // Validate paymentType and purpose
     if (!validateString(paymentType)) {
@@ -52,7 +56,8 @@ router.post('/', authenticateToken, async (req, res) => {
         });
     }
 
-    if (!validateFloat(amount) || amount <= 0) {
+    // Validate amount after converting to float
+    if (!validateFloat(amountAsFloat) || amountAsFloat <= 0) {
         return res.status(400).json({
             success: false,
             message: 'Invalid amount. It must be a valid positive number.',
@@ -84,7 +89,7 @@ router.post('/', authenticateToken, async (req, res) => {
             userId, // userId is extracted from the token
             semester,
             year: years,
-            amount,
+            amount: amountAsFloat, // Use the float value of amount
             paymentType,
             transactionId: transactionId || null, 
             purpose,
@@ -96,14 +101,14 @@ router.post('/', authenticateToken, async (req, res) => {
 
         if (balance) {
             // Update balance
-            balance.balance += amount;
+            balance.balance += amountAsFloat;
 
             await balance.save(); // Save the updated balance
         } else {
             // If no balance exists, create a new balance entry
             await db.Balance.create({
                 userId,
-                balance: amount, // Set the balance to the fee amount if no previous balance exists
+                balance: amountAsFloat, // Set the balance to the fee amount if no previous balance exists
             });
         }
 
@@ -125,3 +130,4 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 module.exports = router;
+

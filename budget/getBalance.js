@@ -21,7 +21,7 @@ router.get('/', authenticateToken, async (req, res) => {
         return res.status(200).json({
             success: true,
             message: 'Balance retrieved successfully.',
-            data: balance, // Return the balance details
+            data: balance, 
             statusCode: 200
         });
     } catch (error) {
