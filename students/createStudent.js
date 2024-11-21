@@ -11,6 +11,7 @@ const validateInteger = (value) => Number.isInteger(value);
 const validateFloat = (value) => typeof value === 'number' && !isNaN(value);
 
 // POST endpoint for creating a student
+// POST endpoint for creating a student
 router.post('/', authenticateToken, async (req, res) => {
     const userId = req.user.id; // Extracting userId from the decoded token
 
@@ -19,7 +20,9 @@ router.post('/', authenticateToken, async (req, res) => {
     // Convert years and semester into integers
     years = parseInt(years, 10);
     semester = parseInt(semester, 10);
-    fess = parseInt(fees, 10);
+
+    // Convert fees to float
+    fees = parseFloat(fees);
 
     // Validate input fields
     if (!validateString(name) || !validateString(admissionNumber) || !validateString(course) || !validateString(department)) {
@@ -106,5 +109,6 @@ router.post('/', authenticateToken, async (req, res) => {
         });
     }
 });
+
 
 module.exports = router;
