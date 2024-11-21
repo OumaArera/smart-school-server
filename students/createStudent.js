@@ -14,7 +14,11 @@ const validateFloat = (value) => typeof value === 'number' && !isNaN(value);
 router.post('/', authenticateToken, async (req, res) => {
     const userId = req.user.id; // Extracting userId from the decoded token
 
-    const { name, admissionNumber, nationalId, sex, course, department, years, semester, fees } = req.body;
+    let { name, admissionNumber, nationalId, sex, course, department, years, semester, fees } = req.body;
+
+    // Convert years and semester into integers
+    years = parseInt(years, 10);
+    semester = parseInt(semester, 10);
 
     // Validate input fields
     if (!validateString(name) || !validateString(admissionNumber) || !validateString(course) || !validateString(department)) {
