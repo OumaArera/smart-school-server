@@ -19,6 +19,7 @@ router.post('/', authenticateToken, async (req, res) => {
     // Convert years and semester into integers
     years = parseInt(years, 10);
     semester = parseInt(semester, 10);
+    fess = parseFloat(fees);
 
     // Validate input fields
     if (!validateString(name) || !validateString(admissionNumber) || !validateString(course) || !validateString(department)) {
